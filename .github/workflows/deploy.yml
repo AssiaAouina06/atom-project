@@ -1,23 +1,41 @@
+name: Deploy AtoM to Azure VM
+
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-  
+
 jobs:
-  run_pull:
-    name: run pull
+  deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: install ssh keys
-      # check this thread to understand why its needed
-      # https://stackoverflow.com/a/70447517
+    - name: Setup SSH key
       run: |
-        install -m 600 -D /dev/null ~/.ssh/AtomGithubaction
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/AtomGithubaction
-        ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-    - name: connect and pull
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull && exit"
-    - name: cleanup
+        mkdir -p ~/.ssh
+        # Write private key from secret, remove Windows carriage returns
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/AtomGithubaction
+        chmod 600 ~/.ssh/AtomGithubaction
+        # Add the server to known_hosts to avoid prompt
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Test SSH connection
+      run: |
+        ssh -i ~/.ssh/AtomGithubaction -o StrictHostKeyChecking=no \
+        ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "echo 'SSH connection OK'"
+
+    - name: Pull latest code and restart services
+      run: |
+        ssh -i ~/.ssh/AtomGithubaction -o StrictHostKeyChecking=no \
+        ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd ${{ secrets.WORK_DIR }}
+          git checkout ${{ secrets.MAIN_BRANCH }}
+          git pull
+          php symfony cc
+          sudo systemctl restart php8.1-fpm
+          sudo systemctl restart nginx
+        EOF
+
+    - name: Cleanup SSH keys
       run: rm -rf ~/.ssh
