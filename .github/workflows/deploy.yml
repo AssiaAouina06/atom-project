@@ -21,7 +21,7 @@ jobs:
 
     - name: Connect and pull from repo
       run: |
-        ssh -i ~/.ssh/AtomGithubaction ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+        ssh -i ~/.ssh/AtomGithubaction ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \ 
         "cd ${{ secrets.WORK_DIR }} && git checkout ${{ secrets.MAIN_BRANCH }} && git pull"
 
     - name: Cleanup
