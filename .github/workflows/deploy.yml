@@ -16,7 +16,7 @@ jobs:
         with:
           host: 20.151.163.248       # your VM IP
           username: assia            # your VM user
-          key: ${{ secrets.AZURE_VM_SSH_KEY }}
+          key: ${{ secrets.AtomGithubaction }}
           script: |
             cd /usr/share/nginx/atom
             git pull origin main
