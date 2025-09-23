@@ -14,12 +14,12 @@ jobs:
       - name: Deploy to Azure VM via SSH
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: 20.151.163.248       # your VM IP
-          username: assia            # your VM user
-          key: ${{secrets.LEyg5Uk2YGKOm6uQQ6T8jJOvZRTfYlbEP8Rzt7+TGx0  }}
-          script: |
-            cd /usr/share/nginx/atom
-            git pull origin main
-            php symfony cc
-            sudo systemctl restart php8.1-fpm
-            sudo systemctl restart nginx
+            host: ${{ secrets.SSH_HOST }}
+            username: ${{ secrets.SSH_USER}}
+            key: ${{ secrets.SSH_PRIVATE_KEY }}
+            script: |
+             cd /usr/share/nginx/atom
+             git pull origin main
+             php symfony cc
+             sudo systemctl restart php8.1-fpm
+             sudo systemctl restart nginx
