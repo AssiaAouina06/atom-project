@@ -14,9 +14,9 @@ jobs:
       - name: Deploy to Azure VM via SSH
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ 20.151.163.248 }}        # e.g. 
-          username: ${{ assia }}    # e.g. 
-          key: ${{ SHA256:7V1C/EzkEUISOEZg8B5hpn98XYae8SEXEjIY7lCqgNc github-actions@atom }}      # private key stored in GitHub secrets
+          host: 20.151.163.248       # your VM IP
+          username: assia            # your VM user
+          key: ${{ secrets.AZURE_VM_SSH_KEY }}
           script: |
             cd /usr/share/nginx/atom
             git pull origin main
