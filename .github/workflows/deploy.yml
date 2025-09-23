@@ -16,7 +16,7 @@ jobs:
         with:
           host: ${{ 20.151.163.248 }}        # e.g. 
           username: ${{ assia }}    # e.g. 
-          key: ${{ RSA 4096] }}      # private key stored in GitHub secrets
+          key: ${{ SHA256:7V1C/EzkEUISOEZg8B5hpn98XYae8SEXEjIY7lCqgNc github-actions@atom }}      # private key stored in GitHub secrets
           script: |
             cd /usr/share/nginx/atom
             git pull origin main
