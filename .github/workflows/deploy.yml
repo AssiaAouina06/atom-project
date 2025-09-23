@@ -1,0 +1,27 @@
+name: Deploy AtoM to Azure VM
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Azure VM via SSH
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{20.151.163.248 }}
+          username: ${{ assia }}
+          key: ${{ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCweJDhnuHVJFW65kJc3dpCUXYLFQBTn+KbiZ2Hmm7s2jFmwLJgn+zKv1yHrDYXaRkXRkaWGM5KS02cIKXCRZw0LgxdZOhzdRUY8U/5R/6LeWqMIyadiMhrJh+mAksP/SbYGgrmtaKy6+/xZ/y8fSGWO4z8AuoCXHy3hztLl/LBsrd4vj3uiArSdPIYJMVtcm/PPrnPX7gbWE5yp42r/4xkB6XWo9iykJvIrLlQwnVn+fX++/Z51F7iiVpkuAVo3K22VXmUnn/v79Ij7wZ4mJKouLXzdRaot6QuDtY4XaH7LzT9zdSYkyBh6Ykp7/PpX1jsq7LkHAYDukmDabfO509YkoCSGkgCv3lGsbi5XFdbcTfTqcRO2b/BoBsTdE6slSHaJp0hglU729nZqHXwvmXWJg22uI42VWquBs0cQUlo8YDMjBm+Ou4paBSPpRVvSa0abpAecMqJ5db1XnxS2OAZ3A9LuA8anERMRtNPbBm4IcEDvLGfN1R+5CwPbFqDyag1ZVD1nQ5jJw/DulajqQvlJj9xGNXKx9ffc6NuuNsVuP/xegEiN9MT5rmnVp2l/MzsvAddSp/pAcLdXesY3K6rkQExFyJfGCKcPS+fyQ5rufRG7uTamWTTXBQlkiQaThblqhKWHF5hWdFewahPq5vw7JiEevX1NSovOUvdPCLtPw== github-actions@atom
+ }}
+          script: |
+            cd /usr/share/nginx/atom
+            git pull origin main
+            php symfony cc
+            sudo systemctl restart php8.1-fpm
+            sudo systemctl restart nginx
+            
