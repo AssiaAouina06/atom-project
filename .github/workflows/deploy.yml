@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   
 jobs:
-  run_pull:
+  run_pull: 
     name: Run remote git pull
     runs-on: ubuntu-latest
     
