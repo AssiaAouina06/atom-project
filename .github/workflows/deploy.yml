@@ -4,22 +4,24 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch:  # allows manual trigger
 
 jobs:
   deploy:
-    name: Deploy via git pull on Azure VM
+    name: Update code on Azure VM
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Install SSH key
+      # Step 1: Set up SSH
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Connect to VM and update app
+      # Step 2: Connect to VM and pull latest code
+      - name: Pull latest code on VM
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             cd /usr/share/nginx/atom && \
@@ -27,5 +29,6 @@ jobs:
             git reset --hard origin/main
           "
 
+      # Step 3: Cleanup SSH keys
       - name: Cleanup
         run: rm -rf ~/.ssh
