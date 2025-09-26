@@ -23,8 +23,8 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             cd /usr/share/nginx/atom && \
-            git fetch origin ${{ secrets.MAIN_BRANCH }} && \
-            git reset --hard origin/${{ secrets.MAIN_BRANCH }}
+            git fetch origin main && \
+            git reset --hard origin/main
           "
 
       - name: Cleanup
