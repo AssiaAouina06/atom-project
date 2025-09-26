@@ -4,31 +4,24 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # allows manual trigger
+  workflow_dispatch: # allows manual trigger
 
 jobs:
   deploy:
-    name: Update code on Azure VM
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Set up SSH
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      # Step 1: Checkout the workflow repo (optional, if needed locally)
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Step 2: Connect to VM and pull latest code
-      - name: Pull latest code on VM
+      # Step 2: Connect to your VM and update code
+      - name: Update code on VM
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+          ssh assia@YOUR_VM_IP "
             cd /usr/share/nginx/atom && \
-            git fetch origin main && \
-            git reset --hard origin/main
+            git fetch https://$GH_TOKEN@github.com/AssiaAouina06/atom-project.git main && \
+            git reset --hard FETCH_HEAD
           "
-
-      # Step 3: Cleanup SSH keys
-      - name: Cleanup
-        run: rm -rf ~/.ssh
