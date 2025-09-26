@@ -4,21 +4,20 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch:  # manual trigger
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
+      # Step 1: Add VM host key to known_hosts
       - name: Add VM to known_hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H 20.151.163.248 >> ~/.ssh/known_hosts
 
+      # Step 2: Update code on VM using HTTPS + PAT
       - name: Update code on VM
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -28,3 +27,7 @@ jobs:
             git fetch https://$GH_TOKEN@github.com/AssiaAouina06/atom-project.git main && \
             git reset --hard FETCH_HEAD
           "
+
+      # Step 3: Cleanup SSH keys
+      - name: Cleanup
+        run: rm -rf ~/.ssh
