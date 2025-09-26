@@ -20,7 +20,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
-          ssh assia@YOUR_VM_IP "
+          ssh assia@20.151.163.248 "
             cd /usr/share/nginx/atom && \
             git fetch https://$GH_TOKEN@github.com/AssiaAouina06/atom-project.git main && \
             git reset --hard FETCH_HEAD
