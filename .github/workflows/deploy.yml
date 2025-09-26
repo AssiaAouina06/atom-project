@@ -4,18 +4,21 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # allows manual trigger
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the workflow repo (optional, if needed locally)
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Connect to your VM and update code
+      - name: Add VM to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 20.151.163.248 >> ~/.ssh/known_hosts
+
       - name: Update code on VM
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
