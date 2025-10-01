@@ -4,30 +4,27 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # manual trigger
+  workflow_dispatch:
 
 jobs:
-  deploy: 
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Add VM host key to known_hosts
-      - name: Add VM to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H 20.151.163.248 >> ~/.ssh/known_hosts
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
-      # Step 2: Update code on VM using HTTPS + PAT
-      - name: Update code on VM
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: |
-          ssh assia@20.151.163.248 "
-            cd /usr/share/nginx/atom && \
-            git fetch https://$GH_TOKEN@github.com/AssiaAouina06/atom-project.git main && \
-            git reset --hard FETCH_HEAD
-          "
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Step 3: Cleanup SSH keys
-      - name: Cleanup
-        run: rm -rf ~/.ssh
+    - name: Deploy code to VM
+      run: |
+        ssh -o StrictHostKeyChecking=no assia@<YOUR_VM_IP> "
+          cd /usr/share/nginx/atom &&
+          git fetch origin main &&
+          git reset --hard origin/main
+        "
+      env:
+        AZ_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
