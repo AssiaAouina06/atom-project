@@ -1,30 +1,23 @@
-name: Deploy to Azure VM
+on: [push]
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+name: AzureARMDeploy
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+    deploy:
+      runs-on: ubuntu-latest
+      steps:
 
-    - name: Log in to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Deploy code to VM
-      run: |
-        ssh -o StrictHostKeyChecking=no assia@<YOUR_VM_IP> "
-          cd /usr/share/nginx/atom &&
-          git fetch origin main &&
-          git reset --hard origin/main
-        "
-      env:
-        AZ_SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Checkout source code
+        uses: actions/checkout@v2
+
+      - name: Deploy ARM Template
+        uses: azure/CLI@v1
+       
+            
+      
